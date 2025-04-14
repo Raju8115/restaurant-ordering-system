@@ -3,16 +3,19 @@ import mysql from "mysql2";
 // create the connection to database
 
 const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "db_restaurant"
+    host: process.env.DB_HOST || "localhost",
+    user: process.env.DB_USER || "root",
+    password: process.env.DB_PASS || "",
+    database: process.env.DB_NAME || "db_restaurant"
 });
 
 
-db.connect(error => {
-  if (error) throw error;
-  console.log("Successfully connected to the database.");
+db.connect((err) => {
+  if (err) {
+    console.error("MySQL connection error: ", err);
+    return;
+  }
+  console.log("Connected to MySQL!");
 });
 
 export default db;
