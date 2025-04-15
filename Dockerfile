@@ -1,27 +1,27 @@
 # Stage 1: Build Vue app
 FROM node:20-alpine as build
+
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Install global vue-cli to get vue-cli-service available
+RUN npm install -g @vue/cli
 
-# Force install devDependencies by clearing NODE_ENV
-ENV NODE_ENV=development
+# Copy package files and install all deps
+COPY package*.json ./
 RUN npm install
 
-# Copy rest of app and build
+# Copy remaining source and build the app
 COPY . .
 RUN npm run build
 
 # Stage 2: Serve with Nginx
 FROM nginx:stable-alpine
 
-# Copy the built output to nginx html directory
+# Copy built Vue files to Nginx HTML directory
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy custom nginx config for SPA routing
+# Copy custom nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port 80 and run nginx
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
