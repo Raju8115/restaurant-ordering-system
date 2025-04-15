@@ -1,0 +1,31 @@
+name: OpenShift CI/CD Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install OpenShift CLI
+      run: |
+        curl -LO https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz
+        tar -xzf openshift-client-linux.tar.gz
+        sudo mv oc /usr/local/bin/
+
+    - name: Login to OpenShift
+      run: |
+        oc login ${{ secrets.OPENSHIFT_SERVER }} --token=${{ secrets.OPENSHIFT_TOKEN }} --insecure-skip-tls-verify
+
+    - name: Start Frontend Build
+      run: |
+        oc start-build restaurant-frontend -n ${{ secrets.OPENSHIFT_NAMESPACE }}
+
+    - name: Start Backend Build
+      run: |
+        oc start-build restaurant-backend -n ${{ secrets.OPENSHIFT_NAMESPACE }}
