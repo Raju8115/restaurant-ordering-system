@@ -33,7 +33,7 @@ COPY --from=frontend-build /app/frontend/dist /usr/share/nginx/html
 
 # Copy custom nginx config if you have one
 # (optional, only if using custom routing or proxy)
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy backend from stage 2
 COPY --from=backend-setup /app/backend /app/backend
